@@ -42,6 +42,7 @@ pip install -r requirements.txt
 ```
 
 Não esqueça de fazer um arquivo `.env` na pasta raiz.
+
 ---
 
 ## Configuração
