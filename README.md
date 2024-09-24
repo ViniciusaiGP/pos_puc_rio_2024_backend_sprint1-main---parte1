@@ -9,6 +9,7 @@ Esta é uma API RESTful para gerenciar usuários, produtos e notas fiscais eletr
 * Integração com notas fiscais: Busca e inserção de produtos via URL de notas fiscais.
 * Proteção de rotas: Acesso restrito a rotas sensíveis, garantindo integridade do sistema.
 
+---
 
 ## Requisitos
 
@@ -39,6 +40,9 @@ Instale as dependências do projeto:
 ```
 pip install -r requirements.txt
 ```
+
+Não esqueça de fazer um arquivo `.env` na pasta raiz.
+---
 
 ## Configuração
 
