@@ -231,8 +231,6 @@ Para iniciar o servidor de desenvolvimento, execute:
 python app.py
 ```
 
-O servidor será iniciado em `http://localhost:5001`.
-
 ---
 
 # Docker
