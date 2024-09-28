@@ -253,7 +253,7 @@ services:
     image: docker-1-flask-app-service
     container_name: flask-1
     ports:
-      - "5001:5000"
+      - "5000:5000"
     networks:
       - my_custom_network
 
@@ -261,7 +261,7 @@ services:
     image: docker-2-flask-app-service
     container_name: flask-2
     ports:
-      - "5002:5000"
+      - "5001:5000"
     networks:
       - my_custom_network
 
@@ -269,7 +269,7 @@ services:
     image: docker-3-flask-app-service
     container_name: flask-3
     ports:
-      - "5003:5000"
+      - "5002:5000"
     networks:
       - my_custom_network
 
