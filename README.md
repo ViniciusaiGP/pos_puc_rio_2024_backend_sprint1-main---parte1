@@ -231,140 +231,73 @@ Para iniciar o servidor de desenvolvimento, execute:
 python app.py
 ```
 
-O servidor será iniciado em `http://localhost:5000`.
+O servidor será iniciado em `http://localhost:5001`.
 
 ---
 
 # Docker
 
-Exemplo genérico.
-
-#### 1. **Instalação do Docker**
-
-**Para Windows e Mac:**
-- **Baixe e instale o Docker Desktop**:
-  - Acesse o [site do Docker Desktop](https://www.docker.com/products/docker-desktop) e baixe o instalador apropriado para seu sistema operacional.
-  - Siga as instruções do instalador. Durante a instalação, pode ser necessário habilitar o WSL 2 (para Windows).
-
-**Para Linux:**
-- **Instalação do Docker**:
-  - Abra um terminal e execute os seguintes comandos para instalar o Docker:
-    ```bash
-    sudo apt-get update
-    sudo apt-get install -y \
-        apt-transport-https \
-        ca-certificates \
-        curl \
-        software-properties-common
-
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    sudo apt-get update
-    sudo apt-get install -y docker-ce
-    ```
-
-- **Iniciar o serviço Docker**:
-    ```bash
-    sudo systemctl start docker
-    sudo systemctl enable docker
-    ```
-
-- **Verificar se o Docker está rodando**:
-    ```bash
-    sudo docker run hello-world
-    ```
-
-#### 2. **Criar a Estrutura do Projeto**
-
-Agora que o Docker está instalado, você precisa criar a estrutura de pastas para sua aplicação Flask. Execute os seguintes comandos no terminal:
+### 1. Criar a rede manualmente:
+Você pode criar a rede antes de subir os containers usando o comando abaixo:
 
 ```bash
-mkdir minha-app-flask
-cd minha-app-flask
-touch app.py requirements.txt Dockerfile docker-compose.yml
+docker network create my_custom_network
 ```
 
-### 3. **Escrever o Código da Aplicação**
+### 2. Definir os containers no `docker-compose.yml`:
 
-Abra o arquivo `app.py` e adicione o seguinte código básico para a aplicação Flask:
-
-```python
-from flask import Flask
-
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return "Olá, Docker!"
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
-```
-
-### 4. **Criar o arquivo requirements.txt**
-
-No arquivo `requirements.txt`, adicione a seguinte linha para instalar o Flask:
-
-```
-Flask==2.0.3
-```
-
-### 5. **Criar o Dockerfile**
-
-No arquivo `Dockerfile`, cole o seguinte código:
-
-```dockerfile
-# Usa a imagem base do Python
-FROM python:3.9.10-slim-buster
-
-# Define o diretório de trabalho no container
-WORKDIR /app
-
-# Copia o arquivo requirements.txt para o diretório de trabalho no container
-COPY requirements.txt ./
-
-# Instala as dependências da aplicação
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copia todo o conteúdo do projeto para o diretório de trabalho
-COPY . .
-
-# Define o comando para rodar a aplicação
-CMD ["python", "app.py"]
-```
-
-### 6. **Criar o docker-compose.yml**
-
-No arquivo `docker-compose.yml`, cole o seguinte código:
+Depois, no arquivo `docker-compose.yml`, associe os containers a essa rede criada:
 
 ```yaml
-version: '3.5'
-
+version: '3'
 services:
-  flask-app-service:
-    build: .  # Aponta para o diretório atual
+  flask-1:
+    image: docker-1-flask-app-service
+    container_name: flask-1
     ports:
-      - "5000:5000"  # Mapeia a porta 5000 do container para a porta 5000 do host
-    environment:
-      - PYTHONUNBUFFERED=1  # Para garantir que os logs sejam exibidos em tempo real
+      - "5001:5000"
+    networks:
+      - my_custom_network
+
+  flask-2:
+    image: docker-2-flask-app-service
+    container_name: flask-2
+    ports:
+      - "5002:5000"
+    networks:
+      - my_custom_network
+
+  flask-3:
+    image: docker-3-flask-app-service
+    container_name: flask-3
+    ports:
+      - "5003:5000"
+    networks:
+      - my_custom_network
+
+networks:
+  my_custom_network:
+    external: true
 ```
 
-### 7. **Rodar a Aplicação**
+### Explicação:
+- **`networks`:** Aqui estamos indicando que a rede `my_custom_network` já existe (`external: true`), ou seja, ela foi criada previamente e não será gerada automaticamente pelo Docker Compose.
 
-Com todos os arquivos configurados, agora você pode rodar a aplicação Flask com Docker. No terminal, na pasta `minha-app-flask`, execute o seguinte comando:
+### 3. Subir os containers:
+Com a rede criada, você pode subir os containers normalmente:
 
 ```bash
-docker-compose up --build
+docker-compose up -d
 ```
 
-Esse comando irá:
-- Construir a imagem Docker da sua aplicação.
-- Iniciar um container executando sua aplicação Flask.
+### Verificar os containers na rede:
+Você pode verificar se os containers estão corretamente conectados à rede com o seguinte comando:
 
-### 8. **Acessar a Aplicação**
+```bash
+docker network inspect my_custom_network
+```
 
-Depois que o comando acima for executado, abra o seu navegador e vá para `http://localhost:5000`. Você deve ver a mensagem "Olá, Docker!".
-
+Dessa forma, você cria uma rede separada e coloca os containers dentro dela para que possam se comunicar.
 
 # Estrutura
 
